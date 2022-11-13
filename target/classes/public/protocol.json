@@ -1,0 +1,26 @@
+[
+  {
+    "letters":[
+      {
+        "letter":"g",
+        "state":"IN_POSITION"
+      },
+      {
+        "letter":"e",
+        "state":"IN_POSITION"
+      },
+      {
+        "letter":"a",
+        "state":"IN_POSITION"
+      },
+      {
+        "letter":"d",
+        "state":"IN_POSITION"
+      },
+      {
+        "letter":"a",
+        "state":"IN_POSITION"
+      }
+    ]
+  }
+]
