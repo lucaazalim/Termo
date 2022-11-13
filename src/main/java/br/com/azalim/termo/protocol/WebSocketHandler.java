@@ -71,21 +71,20 @@ public class WebSocketHandler {
 
             case "newGuess" -> {
 
-                int wordLength = match.getSettings().wordLength();
-
+                int matchWordLength = match.getSettings().wordLength();
                 Guess guess = ((Packet<Guess>) Main.GSON.fromJson(message, new TypeToken<Packet<Guess>>(){}.getType())).content();
-                Letter[] letters = new Letter[wordLength];
 
                 String guessWord = guess.word();
-                String matchWord = match.getWord().word();
 
-                if(guessWord.length() != wordLength) {
+                if(guessWord.length() != matchWordLength) {
                     return;
                 }
 
+                String matchWord = match.getWord().word();
+                Letter[] letters = new Letter[matchWordLength];
                 MatchState state = MatchState.GUESSED;
 
-                for (int index = 0; index < wordLength; index++) {
+                for (int index = 0; index < matchWordLength; index++) {
 
                     char guessChar = guessWord.charAt(index);
                     char matchWordChar = matchWord.charAt(index);
