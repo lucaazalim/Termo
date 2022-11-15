@@ -2,14 +2,14 @@ package br.com.azalim.termo.records;
 
 import br.com.azalim.termo.states.MatchState;
 
-public record WordGrid(Word[] words, MatchState state) {
+public record WordGrid(GridWord[] words, MatchState state) {
 
     public String asString() {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (Word word : words) {
-            for (Letter letter : word.letters()) {
+        for (GridWord gridWord : words) {
+            for (Letter letter : gridWord.letters()) {
 
                 switch (letter.state()) {
                     case IN_POSITION -> stringBuilder.append("✅");

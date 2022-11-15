@@ -12,7 +12,7 @@ public class Match {
     private final UUID uuid;
     private final Session session;
     private MatchSettings settings;
-    private MatchWord word;
-    private WordGrid wordGrid = new WordGrid(new Word[]{}, MatchState.IN_PROGRESS);
+    private Word word;
+    private WordGrid wordGrid = new WordGrid(new GridWord[]{}, MatchState.IN_PROGRESS);
 
 }

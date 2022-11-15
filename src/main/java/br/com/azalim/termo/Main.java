@@ -1,14 +1,19 @@
 package br.com.azalim.termo;
 
 import br.com.azalim.termo.protocol.WebSocketHandler;
-import com.google.common.collect.Lists;
+import br.com.azalim.termo.records.Word;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static spark.Spark.*;
@@ -16,6 +21,8 @@ import static spark.Spark.*;
 public class Main {
 
     public static Gson GSON = new Gson();
+    public static Multimap<Integer, Word> WORDS_BY_LENGTH = MultimapBuilder.hashKeys().arrayListValues().build();
+    public static Map<String, Word> WORDS_BY_NORMALIZED = Maps.newHashMap();
 
     public static void main(String[] args) throws IOException {
 
@@ -28,22 +35,33 @@ public class Main {
             halt(500);
         });
 
-        List<String> words = getWords();
-
-        System.out.println(words.size());
+        loadWords();
 
         init();
 
     }
 
-    public static String getWord(int length) throws IOException {
-        List<String> lengthWords = getWords().stream().filter(word -> word.length() == length).toList();
-        return lengthWords.get(new Random().nextInt(lengthWords.size()));
+    private static void loadWords() throws IOException {
+        URL url = Resources.getResource("br-utf8.txt");
+        Arrays.stream(Resources.toString(url, StandardCharsets.UTF_8).split("\n"))
+                .forEach(rawWord -> {
+
+                    Word word = new Word(rawWord, Util.normalizeString(rawWord));
+
+                    // Remove palavras iguais com acentos diferentes
+                    if(WORDS_BY_NORMALIZED.containsKey(word.normalizedWord())) {
+                        return;
+                    }
+
+                    WORDS_BY_LENGTH.put(rawWord.length(), word);
+                    WORDS_BY_NORMALIZED.put(word.normalizedWord(), word);
+
+                });
     }
 
-    public static List<String> getWords() throws IOException {
-        URL url = Resources.getResource("br-utf8.txt");
-        return Lists.newArrayList(Resources.toString(url, StandardCharsets.UTF_8).split("\n"));
+    public static Word getRandomWord(int length) throws IOException {
+        List<Word> lengthWords = WORDS_BY_LENGTH.get(length).stream().toList();
+        return lengthWords.get(new Random().nextInt(lengthWords.size()));
     }
 
 }

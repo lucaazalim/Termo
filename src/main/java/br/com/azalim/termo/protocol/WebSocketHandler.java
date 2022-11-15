@@ -1,8 +1,10 @@
 package br.com.azalim.termo.protocol;
 
 import br.com.azalim.termo.Main;
+import br.com.azalim.termo.Util;
 import br.com.azalim.termo.records.MatchSettings;
 import br.com.azalim.termo.records.*;
+import br.com.azalim.termo.states.AlertType;
 import br.com.azalim.termo.states.LetterState;
 import br.com.azalim.termo.states.MatchState;
 import com.google.common.collect.BiMap;
@@ -60,21 +62,37 @@ public class WebSocketHandler {
             case "gameSettings" -> {
 
                 MatchSettings matchSettings = ((Packet<MatchSettings>) Main.GSON.fromJson(message, new TypeToken<Packet<MatchSettings>>(){}.getType())).content();
-                MatchWord matchWord = new MatchWord(Main.getWord(matchSettings.wordLength()));
+                Word matchWord = Main.getRandomWord(matchSettings.wordLength());
 
                 match.setSettings(matchSettings);
                 match.setWord(matchWord);
 
-                System.out.println("Match word: " + matchWord.word());
+                this.sendWordGrid(match);
+
+                System.out.println("Match word: " + matchWord);
 
             }
 
             case "newGuess" -> {
 
-                int matchWordLength = match.getSettings().wordLength();
                 Guess guess = ((Packet<Guess>) Main.GSON.fromJson(message, new TypeToken<Packet<Guess>>(){}.getType())).content();
-
                 String guessWord = guess.word();
+                String normalizedGuessWord = Util.normalizeString(guessWord);
+
+                Word word = Main.WORDS_BY_NORMALIZED.get(normalizedGuessWord);
+
+                if(word == null) {
+                    new Alert("Esta palavra não existe.", AlertType.WARNING).send(match);
+                    return;
+                }
+
+                if(Arrays.stream(match.getWordGrid().words()).map(GridWord::word).anyMatch(word.word()::equals)) {
+                    new Alert("Você já tentou esta palavra.", AlertType.WARNING).send(match);
+                    return;
+                }
+
+                guessWord = word.word();
+                int matchWordLength = match.getSettings().wordLength();
 
                 if(guessWord.length() != matchWordLength) {
                     return;
@@ -104,29 +122,33 @@ public class WebSocketHandler {
 
                 }
 
-                Word word = new Word(letters);
+                GridWord gridWord = new GridWord(letters);
                 WordGrid matchWordGrid = match.getWordGrid();
 
-                Word[] words = Arrays.copyOf(matchWordGrid.words(), matchWordGrid.words().length + 1);
+                GridWord[] gridWords = Arrays.copyOf(matchWordGrid.words(), matchWordGrid.words().length + 1);
 
-                if(words.length == match.getSettings().maxGuesses()) {
+                if(gridWords.length == match.getSettings().maxGuesses()) {
                     state = MatchState.OUT_OF_GUESSES;
                 }
 
-                words[words.length - 1] = word;
+                gridWords[gridWords.length - 1] = gridWord;
 
-                matchWordGrid = new WordGrid(words, state);
+                matchWordGrid = new WordGrid(gridWords, state);
 
                 match.setWordGrid(matchWordGrid);
                 System.out.println(matchWordGrid.asString());
 
-                Packet<WordGrid> wordGridPacket = new Packet<>("word_grid", uuid, matchWordGrid);
-                wordGridPacket.send(session);
+                this.sendWordGrid(match);
 
             }
 
         }
 
+    }
+
+    private void sendWordGrid(Match match) {
+        Packet<WordGrid> wordGridPacket = new Packet<>("word_grid", match.getUuid(), match.getWordGrid());
+        wordGridPacket.send(match.getSession());
     }
 
 }
