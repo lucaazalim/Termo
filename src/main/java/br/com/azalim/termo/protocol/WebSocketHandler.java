@@ -30,12 +30,7 @@ public class WebSocketHandler {
     public void onConnect(Session session) throws Exception {
 
         System.out.println("Client connected!");
-
-        UUID uuid = UUID.randomUUID();
-        MATCHES.put(uuid, new Match(uuid, session));
-
-        Packet<UUID> handshakePacket = new Packet<>("handshake", uuid, null);
-        handshakePacket.send(session);
+        this.sendHandshake(session);
 
     }
 
@@ -72,6 +67,8 @@ public class WebSocketHandler {
                 System.out.println("Match word: " + matchWord);
 
             }
+
+            case "restart" -> this.sendHandshake(session);
 
             case "newGuess" -> {
 
@@ -143,6 +140,18 @@ public class WebSocketHandler {
             }
 
         }
+
+    }
+
+    private void sendHandshake(Session session) {
+
+        UUID uuid = UUID.randomUUID();
+        Match match = new Match(uuid, session);
+
+        MATCHES.put(uuid, match);
+
+        Packet<UUID> handshakePacket = new Packet<>("handshake", uuid, null);
+        handshakePacket.send(session);
 
     }
 

@@ -2,6 +2,10 @@ var socket;
 var match;
 var alertTimeout;
 
+const inProgressMatchState = "IN_PROGRESS";
+const outOfGuessesMatchState = "OUT_OF_GUESSES"
+const guessedMatchState = "GUESSED";
+
 open();
 
 function open() {
@@ -42,6 +46,12 @@ function open() {
             match.wordGrid = json.content;
             renderWordGrid();
 
+            if(match.wordGrid.state === guessedMatchState) {
+                alert("<strong>Parabéns!</strong> Você adivinhou a palavra!", "success", false);
+            } else if(match.wordGrid.state === outOfGuessesMatchState) {
+                alert("Você gastou todas as " + match.settings.maxGuesses + " tentativas. :(", "danger", false);
+            }
+
         } else if("alert") {
 
             alert(json.content.message, json.content.type.toLowerCase());
@@ -50,6 +60,12 @@ function open() {
 
     }
 
+}
+
+function restart() {
+    new Packet("restart", null).send();
+    closeAlert();
+    clearWordInput();
 }
 
 function renderWordGrid() {
@@ -67,7 +83,7 @@ function renderWordGrid() {
             var colLetter = empty ? null : words[lineIndex].letters[colIndex];
             var cssClass;
 
-            if(empty && match.wordGrid.state !== "IN_PROGRESS") {
+            if(empty && match.wordGrid.state !== inProgressMatchState) {
                 cssClass = "word_grid_disabled";
             } else if(empty) {
                 cssClass = "word_grid_empty";
@@ -95,6 +111,10 @@ function sendGuess(form) {
 
     var word = form.input_guess.value;
 
+    if(word.length == 0) {
+        return;
+    }
+
     if(word.length != match.settings.wordLength) {
         alert("Insira uma palavra com " + match.settings.wordLength + " letras.", "warning");
         return;
@@ -102,7 +122,7 @@ function sendGuess(form) {
 
     if(match.wordGrid != null) {
 
-        if(match.wordGrid.state != "IN_PROGRESS") {
+        if(match.wordGrid.state != inProgressMatchState) {
             return;
         }
 
@@ -113,11 +133,11 @@ function sendGuess(form) {
     }
 
     new Packet("newGuess", { "word": form.input_guess.value }).send();
-    document.getElementById("input_guess").value = "";
+    clearWordInput();
 
 }
 
-function alert(message, type) {
+function alert(message, type, temporary = true) {
 
     closeAlert();
 
@@ -133,9 +153,11 @@ function alert(message, type) {
 
     alertPlaceholder.append(wrapper);
 
-    alertTimeout = setTimeout(() => {
-        closeAlert();
-    }, 5000);
+    if(temporary) {
+        alertTimeout = setTimeout(() => {
+            closeAlert();
+        }, 5000);
+    }
 
 }
 
@@ -145,6 +167,10 @@ function closeAlert() {
         alert.close();
         clearTimeout(alertTimeout);
     }
+}
+
+function clearWordInput() {
+    document.getElementById("input_guess").value = "";
 }
 
 class Packet {
