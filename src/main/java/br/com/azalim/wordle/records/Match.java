@@ -1,6 +1,6 @@
-package br.com.azalim.termo.records;
+package br.com.azalim.wordle.records;
 
-import br.com.azalim.termo.states.MatchState;
+import br.com.azalim.wordle.states.MatchState;
 import lombok.Data;
 import org.eclipse.jetty.websocket.api.Session;
 

@@ -1,9 +1,6 @@
-package br.com.azalim.termo.records;
-
-import lombok.EqualsAndHashCode;
+package br.com.azalim.wordle.records;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public record GridWord(Letter[] letters) {

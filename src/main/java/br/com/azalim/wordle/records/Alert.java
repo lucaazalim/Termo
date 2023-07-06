@@ -1,7 +1,7 @@
-package br.com.azalim.termo.records;
+package br.com.azalim.wordle.records;
 
-import br.com.azalim.termo.protocol.Packet;
-import br.com.azalim.termo.states.AlertType;
+import br.com.azalim.wordle.protocol.Packet;
+import br.com.azalim.wordle.states.AlertType;
 
 public record Alert(String message, AlertType type) {
 

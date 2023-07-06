@@ -1,4 +1,4 @@
-package br.com.azalim.termo.records;
+package br.com.azalim.wordle.records;
 
 public record Word(String word, String normalizedWord) {
 }

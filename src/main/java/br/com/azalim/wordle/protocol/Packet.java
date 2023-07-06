@@ -1,7 +1,6 @@
-package br.com.azalim.termo.protocol;
+package br.com.azalim.wordle.protocol;
 
-import br.com.azalim.termo.Main;
-import com.google.gson.Gson;
+import br.com.azalim.wordle.Main;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.util.UUID;

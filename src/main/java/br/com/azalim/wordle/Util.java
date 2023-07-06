@@ -1,4 +1,4 @@
-package br.com.azalim.termo;
+package br.com.azalim.wordle;
 
 import java.text.Normalizer;
 

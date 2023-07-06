@@ -1,4 +1,4 @@
-package br.com.azalim.termo.states;
+package br.com.azalim.wordle.states;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

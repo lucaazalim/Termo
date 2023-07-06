@@ -1,7 +1,7 @@
-package br.com.azalim.termo;
+package br.com.azalim.wordle;
 
-import br.com.azalim.termo.protocol.WebSocketHandler;
-import br.com.azalim.termo.records.Word;
+import br.com.azalim.wordle.protocol.WebSocketHandler;
+import br.com.azalim.wordle.records.Word;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;

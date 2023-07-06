@@ -1,12 +1,12 @@
-package br.com.azalim.termo.protocol;
+package br.com.azalim.wordle.protocol;
 
-import br.com.azalim.termo.Main;
-import br.com.azalim.termo.Util;
-import br.com.azalim.termo.records.MatchSettings;
-import br.com.azalim.termo.records.*;
-import br.com.azalim.termo.states.AlertType;
-import br.com.azalim.termo.states.LetterState;
-import br.com.azalim.termo.states.MatchState;
+import br.com.azalim.wordle.Main;
+import br.com.azalim.wordle.Util;
+import br.com.azalim.wordle.records.MatchSettings;
+import br.com.azalim.wordle.records.*;
+import br.com.azalim.wordle.states.AlertType;
+import br.com.azalim.wordle.states.LetterState;
+import br.com.azalim.wordle.states.MatchState;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
